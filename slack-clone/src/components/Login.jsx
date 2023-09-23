@@ -1,18 +1,17 @@
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Button, TextField } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  
   const handleSignIn = async (e) => {
     e.preventDefault();
     const userInfo = { email, password };
-    const endpoint = 'http://206.189.91.54/api/v1/auth/sign_in'; 
+    const endpoint = 'http://206.189.91.54/api/v1/auth/sign_in';
     const method = 'POST';
     const headers = { 'Content-Type': 'application/json' };
     const body = JSON.stringify(userInfo);
@@ -37,7 +36,7 @@ const Login = () => {
         sessionStorage.setItem('user-headers', JSON.stringify(userHeaders));
 
         console.log('Login successful');
-        navigate('/app');
+        navigate('/app'); // Navigate to the '/app' route on successful login
       } else if (response.status === 404) {
         alert('Email is not registered.');
       } else if (response.status === 401) {
@@ -54,7 +53,10 @@ const Login = () => {
   return (
     <LoginContainer>
       <LoginInnerContainer>
-        <img src="https://cdn.mos.cms.futurecdn.net/SDDw7CnuoUGax6x9mTo7dd.jpg" alt="" />
+        <img
+          src="https://cdn.mos.cms.futurecdn.net/SDDw7CnuoUGax6x9mTo7dd.jpg"
+          alt=""
+        />
         <h1>Sign in to Slack</h1>
 
         <form onSubmit={handleSignIn}>
@@ -97,12 +99,13 @@ export default Login;
 const LoginContainer = styled.div`
   background-color: #f8f8f8;
   height: 100vh;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const LoginInnerContainer = styled.div`
-  padding: 100px;
+  padding: 40px;
   text-align: center;
   background-color: white;
   border-radius: 10px;
@@ -111,7 +114,7 @@ const LoginInnerContainer = styled.div`
   > img {
     object-fit: contain;
     height: 100px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   }
 
   > button {

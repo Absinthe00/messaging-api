@@ -138,7 +138,7 @@ const SidebarOption = ({
   };
 
   return (
-    <SidebarOptionContainer onClick={handleClick} addChannelOption={addChannelOption}>
+    <SidebarOptionContainer  onClick={addChannelOption ? addChannel : newMessageOption ? newMessage : selectChannel}>
       {Icon && <Icon fontSize="small" style={{ padding: 10 }} />}
       {Icon ? (
         <h3>{title}</h3>
@@ -174,7 +174,7 @@ const SidebarOptionContainer = styled.div`
   }
 
   input {
-    display: ${(props) => (props.addChannelOption ? 'block' : 'none')};
+     display: ${(props) => (props.addChannelOption ? 'block' : 'none')};
   }
 `;
 

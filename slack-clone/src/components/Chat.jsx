@@ -56,24 +56,35 @@ const Chat = () => {
 };
 
   const loadRoomMessages = async () => {
+  try {
     let response = await fetch(`http://206.189.91.54/api/v1/messages?receiver_id=${roomId}&receiver_class=${roomType}`, {
       method: 'GET',
       headers: JSON.parse(sessionStorage.getItem("user-headers"))
     });
     const data = await response.json();
     console.log('Channel Messages:', data);
-  
-    const uniqueMessagesSet = new Set();
-    data.data.forEach((message) => {
-      uniqueMessagesSet.add(message.id);
-    });
-  
-    const uniqueMessages = [...uniqueMessagesSet].map((messageId) =>
-      data.data.find((message) => message.id === messageId)
-    );
-  
-    setRoomMessages(uniqueMessages);
-  };
+
+    // Check if data is defined and is an array
+    if (data && Array.isArray(data.data)) {
+      const uniqueMessagesSet = new Set();
+      data.data.forEach((message) => {
+        uniqueMessagesSet.add(message.id);
+      });
+
+      const uniqueMessages = [...uniqueMessagesSet].map((messageId) =>
+        data.data.find((message) => message.id === messageId)
+      );
+
+      setRoomMessages(uniqueMessages);
+    } else {
+      console.error('Invalid or empty message data received:', data);
+    }
+  } catch (error) {
+    console.error('Error loading room messages:', error);
+    // Handle the error, e.g., show an error message to the user
+  }
+};
+
 
   useEffect(() => {
     loadRoomDetails();
