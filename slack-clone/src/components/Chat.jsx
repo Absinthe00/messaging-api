@@ -13,18 +13,6 @@ const Chat = () => {
   const [roomMessages, setRoomMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
-  const fetchDatabase = async () => {
-    let response = await fetch('http://206.189.91.54/api/v1/users', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json', // Set the Content-Type header
-        ...JSON.parse(sessionStorage.getItem("user-headers")),
-      },
-      })
-      const db = await response.json();
-      return db.data;
-  }
-
   const loadRoomDetails = async () => {
     if (roomType === 'Channel') {
       let response = await fetch(`http://206.189.91.54/api/v1/channels/${roomId}`, {

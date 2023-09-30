@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,12 +13,19 @@ const SidebarOption = ({
   loadDirectMessages,
 }) => {
   const navigate = useNavigate();
+  const [userChannelMessages, setUserChannelMessages] = useState([]);
+
+  useEffect(() => {
+    if (id && type === 'User') {
+      fetchUserChannelMessages(id);
+    }
+  }, [id, type]);
 
   const handleClick = () => {
     if (addChannelOption) {
       addChannel();
     } else if (newMessageOption) {
-      newMessage();
+      selectUser();
     } else if (id) {
       selectChannel();
     } else {
@@ -31,6 +38,30 @@ const SidebarOption = ({
     navigate(`/${type}/${id}`);
   };
 
+  const selectUser = () => {
+    console.log('Selected User ID:', id);
+    navigate(`/User/${id}`);
+  };
+
+  const fetchUserChannelMessages = async () => {
+    try {
+      const response = await fetch(`http://206.189.91.54/api/v1/messages?receiver_id=1&receiver_class=${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...JSON.parse(sessionStorage.getItem('user-headers')),
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch user channel messages');
+      }
+      const userMessages = await response.json();
+      console.log('User Channel Messages:', userMessages);
+      setUserChannelMessages(userMessages);
+    } catch (error) {
+      console.error('Error fetching user channel messages:', error);
+    }
+  };
   const fetchDatabase = async () => {
     try {
       const response = await fetch('http://206.189.91.54/api/v1/users', {
@@ -44,7 +75,7 @@ const SidebarOption = ({
         throw new Error('Failed to fetch database');
       }
       const db = await response.json();
-      console.log(db);
+      console.log('Fetched Database:', db);
       return db.data;
     } catch (error) {
       console.error('Error fetching database:', error);
@@ -84,7 +115,7 @@ const SidebarOption = ({
   const newMessage = async () => {
     const userName = prompt('Enter the email of the user you want to send a message')?.toString();
     const message = prompt("Enter the message you'd like to send to the user");
-    let userId = null;
+    let id = null;
 
     if (userName && message) {
       try {
@@ -92,8 +123,8 @@ const SidebarOption = ({
         const user = db.find((user) => user.uid === userName);
 
         if (user) {
-          userId = user.id;
-          console.log('User ID:', userId);
+          id = user.id;
+          console.log('User ID:', id);
         } else {
           console.log('User not found in the database.');
           return;
@@ -106,7 +137,7 @@ const SidebarOption = ({
             ...JSON.parse(sessionStorage.getItem('user-headers')),
           },
           body: JSON.stringify({
-            receiver_id: userId,
+            receiver_id: id,
             receiver_class: 'User',
             body: message,
           }),
@@ -115,10 +146,10 @@ const SidebarOption = ({
         console.log('New Message', data);
 
         if (response.ok) {
-          const recentContact = { userName, userId };
+          const recentContact = { userName, id };
           const existingRecentContacts = JSON.parse(localStorage.getItem('recent-contacts')) || [];
 
-          const contactExists = existingRecentContacts.some((contact) => contact.userId === userId);
+          const contactExists = existingRecentContacts.some((contact) => contact.id === id);
 
           if (!contactExists) {
             existingRecentContacts.push(recentContact);
@@ -127,7 +158,7 @@ const SidebarOption = ({
           localStorage.setItem('recent-contacts', JSON.stringify(existingRecentContacts));
 
           loadDirectMessages();
-          navigate(`/User/${userId}`);
+          navigate(`/User/${id}`);
         } else {
           alert(data.errors);
         }

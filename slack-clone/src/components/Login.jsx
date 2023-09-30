@@ -36,7 +36,7 @@ const Login = () => {
         sessionStorage.setItem('user-headers', JSON.stringify(userHeaders));
 
         console.log('Login successful');
-        navigate('/app'); // Navigate to the '/app' route on successful login
+        navigate('/page');
       } else if (response.status === 404) {
         alert('Email is not registered.');
       } else if (response.status === 401) {

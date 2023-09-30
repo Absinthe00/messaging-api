@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 
@@ -26,7 +26,7 @@ function App() {
         const newValue = event.newValue;
         if (newValue !== null) {
           const parsedHeaders = JSON.parse(newValue);
-          setUser(parsedHeaders.uid); // Fixed syntax error
+          setUser(parsedHeaders.uid);
         } else {
           setUser("");
         }
@@ -42,22 +42,23 @@ function App() {
   return (
     <div className="App">
       <Router>
-        {!user ? (
-          <Routes>
-            <Route path='/' element={<Login />} end />
-            <Route path='/signup' element={<Signup />} />
-          </Routes>
-        ) : (
+        {user ? (
           <>
             <Header />
             <AppBody>
-              <Sidebar /> {/* Render Sidebar only once */}
+              <Sidebar />
               <Routes>
                 <Route path="/app" element={<AppContainer />} />
                 <Route path="/:roomType/:roomId" element={<Chat />} />
               </Routes>
             </AppBody>
           </>
+        ) : (
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            {/* You can use <Navigate> here after a successful login */}
+          </Routes>
         )}
       </Router>
     </div>
